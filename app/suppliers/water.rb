@@ -5,22 +5,38 @@ module Suppliers
 				agent.user_agent_alias = 'Mac Safari'
 				agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
 			}
+
+			# Maintaining a list of available sites helps extending the scraper in the future
 			@supported_sites = ['affinity', 'thameswater']
 		end
 		
+		# 
 		def getSupplier (postcode)
 			@name = nil
 
+			# Uncomment the timers to track the time needed for 2 different approaches
+			# puts Time.new.inspect
+=begin
 			if (querySite('affinity', postcode) == true)
 				@name = 'Affinity'
 			elsif (querySite('thameswater', postcode) == true)
 				@name = 'ThamesWater'
 			end
+=end
+			suppliers = Parallel.map(@supported_sites, :in_processes => @supported_sites.size) do |site|
+				if (querySite(site, postcode) == true)
+					@name = site
+				end
+			end
 
-			return @name
+			# puts Time.new.inspect
+
+			@name = suppliers.compact().first().titleize
 		end
 
 		private
+			# build the config for different sites
+			# this will allow us to extend and add more sites to scrape from
 			def getConfig (site)
 				config = {}
 				if (site == 'affinity')
@@ -42,6 +58,7 @@ module Suppliers
 				return config
 			end
 			
+			# do the actual scraping by inserting the postcode and using the config for the specified site
 			def querySite (site, postcode)
 				if (!@supported_sites.include?(site))
 					return nil
@@ -50,6 +67,11 @@ module Suppliers
 				config = getConfig(site)
 				@scraper.get(config[:url]) do |page|
 					form = page.form_with(:id => config[:form_id])
+					
+					if (form.nil?)
+						return false
+					end
+
 					form.field_with(:name => config[:field_name]).value = postcode
 					submit_button = form.button_with(:id => config[:submit_button_id])
 					

@@ -25,6 +25,16 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'mechanize', '~> 2.7.3'
 gem 'bootstrap-sass', '~> 3.2.0'
+gem 'parallel', '~> 1.6.0'
+
+# db config adapted for heroku deploy
+group :production, :staging do
+	gem "pg"
+end
+
+group :development, :test do
+	gem "sqlite3"
+end
 
 
 # Use ActiveModel has_secure_password
