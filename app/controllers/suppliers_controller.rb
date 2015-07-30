@@ -1,8 +1,6 @@
 require File.join(Rails.root, "app/suppliers/water.rb")
 
 class SuppliersController < ApplicationController
-	before_action :set_supplier, only: [:show, :edit, :update, :destroy]
-
 	def index
 	end
 
@@ -11,7 +9,7 @@ class SuppliersController < ApplicationController
 		@supplier = @scraper.getSupplier(params[:postcode])
 
 		respond_to do |format|
-			format.html { render :supplier => @supplier }
+			format.html { render "index", :supplier => @supplier }
 		end
 	end 
 end

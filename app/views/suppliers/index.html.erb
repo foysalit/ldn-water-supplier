@@ -1,7 +1,19 @@
 <div class="col-md-6 col-md-offset-3">
-	<h2>Find Your Water Supplier</h2>
+	<div class="supplier-header text-center">
+		<% if defined?(@supplier).nil? %>
+			<p class="bg-primary">Find Your Water Supplier</p>
+		<% elsif @supplier.nil? %>
+			<p class="bg-danger">
+				Sorry we could not find your water supplier.
+			</p>
+		<% else %>       
+			<p class="bg-success">
+				Your supplier is <span class="label label-primary"><%= @supplier %></span> 
+			</p>
+		<% end %>
+	</div>
 
-	<form action="/suppliers/water">
+	<form method="post" action="/suppliers/water">
 		<div class="form-group">
 			<label for="postcode">PostCode</label>
 			<input 
@@ -11,6 +23,7 @@
 				name="postcode" 
 				placeholder="Postcode">
 		</div>
+		<%= tag(:input, :type => "hidden", :name => request_forgery_protection_token.to_s, :value => form_authenticity_token) %> 
 		<button type="submit" class="btn btn-success">Submit</button>
 	</form>
 </div>
