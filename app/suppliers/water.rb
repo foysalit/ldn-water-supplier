@@ -28,10 +28,13 @@ module Suppliers
 					@name = site
 				end
 			end
-
 			# puts Time.new.inspect
 
-			@name = suppliers.compact().first().titleize
+			if (suppliers.compact().size() > 0)
+				@name = suppliers.compact().first().titleize
+			end 
+
+			return @name
 		end
 
 		private
